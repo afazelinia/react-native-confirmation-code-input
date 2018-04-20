@@ -8,6 +8,7 @@ const viewPropTypes = ViewPropTypes || View.propTypes;
 
 export default class ConfirmationCodeInput extends Component {
   static propTypes = {
+    codeArr: PropTypes.string,
     codeLength: PropTypes.number,
     compareWithCode: PropTypes.string,
     inputPosition: PropTypes.string,
@@ -25,6 +26,7 @@ export default class ConfirmationCodeInput extends Component {
   };
   
   static defaultProps = {
+    codeValue: '',
     codeLength: 5,
     inputPosition: 'center',
     autoFocus: true,
@@ -40,15 +42,15 @@ export default class ConfirmationCodeInput extends Component {
   
   constructor(props) {
     super(props);
-    
+    const codeArr = this.props.codeValue === '' ? new Array(this.props.codeLength).fill('') : this.props.codeValue.split('');
     this.state = {
-      codeArr: new Array(this.props.codeLength).fill(''),
+      codeArr: codeArr,
       currentIndex: 0
     };
     
     this.codeInputRefs = [];
   }
-  
+
   componentDidMount() {
     const { compareWithCode, codeLength, inputPosition } = this.props;
     if (compareWithCode && compareWithCode.length !== codeLength) {
@@ -59,6 +61,13 @@ export default class ConfirmationCodeInput extends Component {
       console.error('Invalid input position. Must be in: center, left, right, full');
     }
   }
+
+    componentWillReceiveProps(nextProps) {
+      if(nextProps.codeValue !== this.props.codeValue) {
+        const codeArr = nextProps.codeValue === '' ? new Array(this.props.codeLength).fill('') : nextProps.codeValue.split('');
+        this.setState({ codeArr: codeArr });
+      }
+    }
   
   clear() {
     this.setState({
